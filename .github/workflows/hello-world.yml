@@ -1,7 +1,12 @@
+env:
+  docker_username: ${{ secrets.DOCKER_USERNAME }}
+  docker_password: ${{ secrets.DOCKER_PASSWORD }}
+  GIT_COMMIT: ${{ GITHUB_SHA }}
+
 name: hello-world
 on: push
 jobs:
-  my-job:
+  Build:
     runs-on: ubuntu-latest
     container: gradle:6-jdk11
     steps:
@@ -16,8 +21,18 @@ jobs:
         with:
           name: my-artifact
           path: app/build/libs/
-      - name: Download My Artifact
+  Docker-image:
+    runs-on: ubuntu-latest
+    needs: [Build]
+    permissions:
+      packages: write
+    steps:
+      - name: Download Build Artifact
         uses: actions/download-artifact@v3
         with:
           name: my-artifact
           path: app/build/libs/
+      - name: Build Image
+        run: ci/build-docker.sh
+      - name: Push Image
+        run: ci/push-docker.sh
