@@ -15,9 +15,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: my-artifact
-          path: gradle/artifacts/
+          path: app/build/libs/
       - name: Download My Artifact
         uses: actions/download-artifact@v3
         with:
           name: my-artifact
-          path: gradle/artifacts/
+          path: app/build/libs/
