@@ -6,12 +6,25 @@ env:
 name: Java CI
 on: push
 jobs:
+  Clone-down:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Clone-down
+      uses: actions/checkout@v3
+    - name: Upload Repo Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: repo
+        path: .
   Build:
     runs-on: ubuntu-latest
     container: gradle:6-jdk11
     steps:
-      - name: Clone-down
-        uses: actions/checkout@v3
+      - name: Download Repo Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: repo
+          path: .
       - name: Build
         run: ci/build-app.sh
       - name: Test
@@ -19,7 +32,7 @@ jobs:
       - name: Upload My Build Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: my-artifact
+          name: my-executable
           path: app/build/libs/
   Docker-image:
     runs-on: ubuntu-latest
@@ -27,12 +40,15 @@ jobs:
     permissions:
       packages: write
     steps:
-      - name: Clone-down
-        uses: actions/checkout@v3
+      - name: Download Repo Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: repo
+          path: .
       - name: Download Build Artifact
         uses: actions/download-artifact@v3
         with:
-          name: my-artifact
+          name: my-executable
           path: app/build/libs/
       - name: Build Image
         run: ci/build-docker.sh
@@ -42,15 +58,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: [Docker-image]
     steps:
-      - name: Clone down repo to make ci/ available
-        uses: actions/checkout@v3
+      - name: Download Repo Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: repo
+          path: .
       - name: Execute component test
         run: ci/component-test.sh
   Performane-test:
     runs-on: ubuntu-latest
     needs: [Docker-image]
     steps:
-      - name: Clone down repo to make ci/ available
-        uses: actions/checkout@v3
+      - name: Download Repo Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: repo
+          path: .
       - name: Execute performance test
         run: ci/performance-test.sh
