@@ -7,7 +7,7 @@ name: Java CI
 on: push
 jobs:
   Clone-down:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - name: Clone-down
       uses: actions/checkout@v3
@@ -17,7 +17,7 @@ jobs:
         name: repo
         path: .
   Build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [Clone-down]
     container: gradle:6-jdk11
     steps:
@@ -36,7 +36,7 @@ jobs:
           name: my-executable
           path: app/build/libs/
   Docker-image:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [Build]
     permissions:
       packages: write
@@ -56,7 +56,7 @@ jobs:
       - name: Push Image
         run: chmod +x ci/push-docker.sh && ci/push-docker.sh
   Component-test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [Docker-image]
     steps:
       - name: Download Repo Artifact
@@ -67,7 +67,7 @@ jobs:
       - name: Execute component test
         run: chmod +x ci/component-test.sh && ci/component-test.sh
   Performane-test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [Docker-image]
     steps:
       - name: Download Repo Artifact
