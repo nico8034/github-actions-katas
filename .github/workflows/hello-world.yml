@@ -52,7 +52,7 @@ jobs:
           name: my-executable
           path: app/build/libs/
       - name: Build Image
-        run: chmod +x ci/build-docker.sh && ci/push-docker.sh
+        run: chmod +x ci/build-docker.sh && ci/build-docker.sh
       - name: Push Image
         run: chmod +x ci/push-docker.sh && ci/push-docker.sh
   Component-test:
